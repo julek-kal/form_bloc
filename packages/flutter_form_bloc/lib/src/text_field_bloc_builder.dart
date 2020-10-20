@@ -87,7 +87,7 @@ class TextFieldBlocBuilder extends StatefulWidget {
     this.textCapitalization = TextCapitalization.none,
     this.style,
     this.strutStyle,
-    this.obscureText,
+    this.obscureText = false,
     this.textAlign = TextAlign.start,
     this.textAlignVertical,
     this.textDirection,
