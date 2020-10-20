@@ -3,20 +3,16 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_bloc/src/can_show_field_bloc_builder.dart';
 import 'package:flutter_form_bloc/src/flutter_typeahead.dart';
 import 'package:flutter_form_bloc/src/utils/utils.dart';
 import 'package:form_bloc/form_bloc.dart';
-import 'package:flutter/widgets.dart';
 
+export 'package:flutter/services.dart' show TextInputType, TextInputAction, TextCapitalization;
 export 'package:flutter/widgets.dart' show EditableText;
-
-export 'package:flutter/services.dart'
-    show TextInputType, TextInputAction, TextCapitalization;
-
-export 'package:flutter_form_bloc/src/flutter_typeahead.dart'
-    show SuggestionsBoxDecoration;
+export 'package:flutter_form_bloc/src/flutter_typeahead.dart' show SuggestionsBoxDecoration;
 
 const double _kMenuItemHeight = 48.0;
 const EdgeInsets _kMenuItemPadding = EdgeInsets.symmetric(horizontal: 16.0);
@@ -182,11 +178,8 @@ class TextFieldBlocBuilder extends StatefulWidget {
           !expands || (maxLines == null && minLines == null),
           'minLines and maxLines must be null when expands is true.',
         ),
-        assert(maxLength == null ||
-            maxLength == TextFieldBlocBuilder.noMaxLength ||
-            maxLength > 0),
-        keyboardType = keyboardType ??
-            (maxLines == 1 ? TextInputType.text : TextInputType.multiline),
+        assert(maxLength == null || maxLength == TextFieldBlocBuilder.noMaxLength || maxLength > 0),
+        keyboardType = keyboardType ?? (maxLines == 1 ? TextInputType.text : TextInputType.multiline),
         super(key: key);
 
   /// {@template flutter_form_bloc.FieldBlocBuilder.fieldBloc}
@@ -686,13 +679,11 @@ class _TextFieldBlocBuilderState extends State<TextFieldBlocBuilder> {
     super.initState();
 
     _controllerListener = _textControllerListener;
-    _controller =
-        TextEditingController(text: widget.textFieldBloc?.state?.value);
+    _controller = TextEditingController(text: widget.textFieldBloc?.state?.value);
 
     _controller.addListener(_controllerListener);
 
-    _obscureText = widget.suffixButton != null &&
-        widget.suffixButton == SuffixButton.obscureText;
+    _obscureText = widget.suffixButton != null && widget.suffixButton == SuffixButton.obscureText;
     if (widget.focusNode == null) {
       _focusNode = FocusNode();
     }
@@ -733,8 +724,7 @@ class _TextFieldBlocBuilderState extends State<TextFieldBlocBuilder> {
 
     // TODO: Find out why the cursor returns to the beginning.
     await Future.delayed(Duration(milliseconds: 0));
-    _controller.selection =
-        TextSelection.collapsed(offset: _controller.text.length);
+    _controller.selection = TextSelection.collapsed(offset: _controller.text.length);
   }
 
   FocusNode get _effectiveFocusNode => widget.focusNode ?? _focusNode;
@@ -754,8 +744,7 @@ class _TextFieldBlocBuilderState extends State<TextFieldBlocBuilder> {
           builder: (context, state) {
             final isEnabled = fieldBlocIsEnabled(
               isEnabled: widget.isEnabled,
-              enableOnlyWhenFormBlocCanSubmit:
-                  widget.enableOnlyWhenFormBlocCanSubmit,
+              enableOnlyWhenFormBlocCanSubmit: widget.enableOnlyWhenFormBlocCanSubmit,
               fieldBlocState: state,
             );
 
@@ -781,9 +770,7 @@ class _TextFieldBlocBuilderState extends State<TextFieldBlocBuilder> {
             decoration = decoration.copyWith(
               suffixIcon: InkWell(
                   borderRadius: BorderRadius.circular(25),
-                  child: _obscureText
-                      ? widget.obscureTextTrueIcon
-                      : widget.obscureTextFalseIcon,
+                  child: _obscureText ? widget.obscureTextTrueIcon : widget.obscureTextFalseIcon,
                   onTap: () {
                     setState(() {
                       _obscureText = !_obscureText;
@@ -824,8 +811,7 @@ class _TextFieldBlocBuilderState extends State<TextFieldBlocBuilder> {
     );
   }
 
-  Widget _buildTextField(
-      {@required TextFieldBlocState state, @required bool isEnabled}) {
+  Widget _buildTextField({@required TextFieldBlocState state, @required bool isEnabled}) {
     return widgetBasedOnPlatform(
       mobile: TypeAheadField<String>(
         textFieldConfiguration: TextFieldConfiguration<String>(
@@ -834,21 +820,19 @@ class _TextFieldBlocBuilderState extends State<TextFieldBlocBuilder> {
           keyboardType: widget.keyboardType,
           textInputAction: widget.textInputAction != null
               ? widget.textInputAction
-              : widget.nextFocusNode != null ? TextInputAction.next : null,
+              : widget.nextFocusNode != null
+                  ? TextInputAction.next
+                  : null,
           textCapitalization: widget.textCapitalization,
           style: isEnabled
               ? widget.style
               : widget.style != null
-                  ? widget.style
-                      .copyWith(color: Theme.of(context).disabledColor)
-                  : Theme.of(context)
-                      .textTheme
-                      .subtitle1
-                      .copyWith(color: Theme.of(context).disabledColor),
+                  ? widget.style.copyWith(color: Theme.of(context).disabledColor)
+                  : Theme.of(context).textTheme.subtitle1.copyWith(color: Theme.of(context).disabledColor),
           textAlign: widget.textAlign,
           textDirection: widget.textDirection,
           autofocus: widget.autofocus,
-          obscureText: _obscureText,
+          obscureText: (widget.suffixButton == SuffixButton.obscureText) ? _obscureText : widget.obscureText,
           autocorrect: widget.autocorrect,
           minLines: widget.minLines,
           maxLines: widget.maxLines,
@@ -911,11 +895,10 @@ class _TextFieldBlocBuilderState extends State<TextFieldBlocBuilder> {
                   'No Items Found!',
                   style: widget.suggestionTextStyle ??
                       Theme.of(context).textTheme.subtitle1.copyWith(
-                            color: ThemeData.estimateBrightnessForColor(
-                                        Theme.of(context).canvasColor) ==
-                                    Brightness.dark
-                                ? Colors.white
-                                : Colors.grey[800],
+                            color:
+                                ThemeData.estimateBrightnessForColor(Theme.of(context).canvasColor) == Brightness.dark
+                                    ? Colors.white
+                                    : Colors.grey[800],
                           ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
@@ -938,9 +921,7 @@ class _TextFieldBlocBuilderState extends State<TextFieldBlocBuilder> {
               suggestion,
               style: widget.suggestionTextStyle ??
                   Theme.of(context).textTheme.subtitle1.copyWith(
-                        color: ThemeData.estimateBrightnessForColor(
-                                    Theme.of(context).canvasColor) ==
-                                Brightness.dark
+                        color: ThemeData.estimateBrightnessForColor(Theme.of(context).canvasColor) == Brightness.dark
                             ? Colors.white
                             : Colors.grey[800],
                       ),
@@ -972,16 +953,15 @@ class _TextFieldBlocBuilderState extends State<TextFieldBlocBuilder> {
         keyboardType: widget.keyboardType,
         textInputAction: widget.textInputAction != null
             ? widget.textInputAction
-            : widget.nextFocusNode != null ? TextInputAction.next : null,
+            : widget.nextFocusNode != null
+                ? TextInputAction.next
+                : null,
         textCapitalization: widget.textCapitalization,
         style: isEnabled
             ? widget.style
             : widget.style != null
                 ? widget.style.copyWith(color: Theme.of(context).disabledColor)
-                : Theme.of(context)
-                    .textTheme
-                    .subtitle1
-                    .copyWith(color: Theme.of(context).disabledColor),
+                : Theme.of(context).textTheme.subtitle1.copyWith(color: Theme.of(context).disabledColor),
         textAlign: widget.textAlign,
         textDirection: widget.textDirection,
         autofocus: widget.autofocus,
