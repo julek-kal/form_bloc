@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:core';
+import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -85,19 +87,42 @@ abstract class FormBloc<SuccessResponse, FailureResponse>
     for (final sub in _stepValidationSubs.values) {
       sub.cancel();
     }
+    final singleFieldBlocsMap = allFieldBlocs.map(
+      (key, fieldBlocOfStep) => MapEntry(
+        key,
+        FormBlocUtils.getAllSingleFieldBlocs(fieldBlocOfStep),
+      ),
+    );
 
-    allFieldBlocs.forEach((step, fieldBlocs) {
-      _stepValidationSubs[step] =
-          MultiFieldBloc.onValidationStatus(fieldBlocs).listen((status) {
-        if (_autoValidate) {
-          _canSubmit = !status.isValidating;
-        }
-        _updateValidStep(
-          isValid: status.isValid,
-          step: step,
-        );
-      });
-    });
+    singleFieldBlocsMap.forEach(
+      (key, singleFieldBlocs) {
+        _stepValidationSubs[key] = Rx.combineLatest<FieldBlocState, List<FieldBlocState>>(
+          singleFieldBlocs.map((fieldBloc) => Rx.merge([
+                Stream.value(fieldBloc.state),
+                fieldBloc.stream,
+              ])),
+          (fieldStates) {
+            // if any value change, then can submit again
+            _canSubmit = true;
+            return fieldStates;
+          },
+        ).listen((fieldStates) {
+          _updateValidStep(isValid: MultiFieldBloc.areFieldBlocsValid(singleFieldBlocs), step: key);
+        });
+      },
+    );
+
+    // allFieldBlocs.forEach((step, fieldBlocs) {
+    //   _stepValidationSubs[step] = MultiFieldBloc.onValidationStatus(fieldBlocs).listen((status) {
+    //     if (_autoValidate) {
+    //       _canSubmit = !status.isValidating;
+    //     }
+    //     _updateValidStep(
+    //       isValid: status.isValid,
+    //       step: step,
+    //     );
+    //   });
+    // });
   }
 
   /// If [isLoading] is `true`, [OnLoading]
@@ -327,9 +352,7 @@ abstract class FormBloc<SuccessResponse, FailureResponse>
     // TODO: Check when is the last step, but not can submit again, and then go to previous step and try to submit again.
     final notValidStep = state.notValidStep;
 
-    if (state.isLastStep &&
-        notValidStep != null &&
-        notValidStep != state.lastStep) {
+    if (state.isLastStep && notValidStep != null && notValidStep != state.lastStep) {
       // go to the first step invalid
       emit(FormBlocSubmissionFailed(
         isValidByStep: state._isValidByStep,
@@ -356,8 +379,7 @@ abstract class FormBloc<SuccessResponse, FailureResponse>
     // get field blocs of the current step and validate
     final currentFieldBlocs = state.fieldBlocs(state.currentStep)?.values ?? [];
 
-    final isValidDone =
-        _isValidDone = MultiFieldBloc.validateAll(currentFieldBlocs);
+    final isValidDone = _isValidDone = MultiFieldBloc.validateAll(currentFieldBlocs);
     final isValid = await isValidDone;
 
     if (_isValidDone != isValidDone) return;
@@ -390,18 +412,19 @@ abstract class FormBloc<SuccessResponse, FailureResponse>
     required bool isValid,
     required int step,
   }) async {
-    emit(state._copyWith(
-      isValidByStep: {
-        ...state._isValidByStep,
-        step: isValid,
-      },
-      fieldBlocs: state._fieldBlocs,
-    ));
+    final stateSnapshot = state;
+
+    final newState = stateSnapshot._copyWith(
+      isValidByStep: Map.from(state._isValidByStep)..[step] = isValid,
+      fieldBlocs: Map.from(state._fieldBlocs),
+    );
+
+    log((newState == state).toString());
+    emit(newState);
   }
 
   void _onClearFormBloc() {
-    final allSingleFieldBlocs =
-        FormBlocUtils.getAllSingleFieldBlocs(state.fieldBlocs()!.values);
+    final allSingleFieldBlocs = FormBlocUtils.getAllSingleFieldBlocs(state.fieldBlocs()!.values);
 
     for (var fieldBloc in allSingleFieldBlocs) {
       fieldBloc.clear();
@@ -501,8 +524,7 @@ abstract class FormBloc<SuccessResponse, FailureResponse>
         for (final step in state._fieldBlocs.keys)
           step: {
             for (final fieldBloc in state.flatFieldBlocs(step)!)
-              if (!fieldBlocs
-                  .any((fb) => fieldBloc.state.name == fb.state.name))
+              if (!fieldBlocs.any((fb) => fieldBloc.state.name == fb.state.name))
                 fieldBloc.state.name: fieldBloc,
           },
       };
