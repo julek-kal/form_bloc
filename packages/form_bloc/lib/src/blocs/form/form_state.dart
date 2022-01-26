@@ -54,7 +54,7 @@ abstract class FormBlocState<SuccessResponse, FailureResponse> extends Equatable
   int? get notValidStep {
     final invalidSteps = <int>[];
     if (_isValidByStep.isNotEmpty) {
-      for (var i = 0; i < _isValidByStep.length - 1; i++) {
+      for (var i = 0; i <= _isValidByStep.length - 1; i++) {
         if (!_isValidByStep[i]!) {
           invalidSteps.add(i);
         }
