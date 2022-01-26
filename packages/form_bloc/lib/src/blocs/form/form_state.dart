@@ -605,6 +605,7 @@ class FormBlocLoading<SuccessResponse, FailureResponse>
   List<Object?> get props => [
         _isValidByStep,
         isEditing,
+        _fieldBlocs,
         toJson(),
         currentStep,
         progress,
@@ -649,6 +650,7 @@ class FormBlocLoadFailed<SuccessResponse, FailureResponse>
         _isValidByStep,
         failureResponse,
         isEditing,
+        _fieldBlocs,
         toJson(),
         currentStep,
       ];
@@ -683,6 +685,7 @@ class FormBlocLoaded<SuccessResponse, FailureResponse>
   List<Object?> get props => [
         _isValidByStep,
         isEditing,
+        _fieldBlocs,
         toJson(),
         currentStep,
       ];
@@ -728,6 +731,7 @@ class FormBlocSubmitting<SuccessResponse, FailureResponse>
         progress,
         isCanceling,
         isEditing,
+        _fieldBlocs,
         toJson(),
         currentStep,
       ];
@@ -777,6 +781,7 @@ class FormBlocSuccess<SuccessResponse, FailureResponse>
         successResponse,
         isEditing,
         canSubmitAgain,
+        _fieldBlocs,
         toJson(),
         currentStep,
         stepCompleted,
@@ -822,6 +827,7 @@ class FormBlocFailure<SuccessResponse, FailureResponse>
         _isValidByStep,
         failureResponse,
         isEditing,
+        _fieldBlocs,
         toJson(),
         currentStep,
       ];
@@ -858,6 +864,7 @@ class FormBlocSubmissionCancelled<SuccessResponse, FailureResponse>
   List<Object?> get props => [
         _isValidByStep,
         isEditing,
+        _fieldBlocs,
         toJson(),
         currentStep,
       ];
@@ -885,6 +892,7 @@ class FormBlocSubmissionFailed<SuccessResponse, FailureResponse>
   List<Object?> get props => [
         _isValidByStep,
         isEditing,
+        _fieldBlocs,
         toJson(),
         currentStep,
       ];
@@ -916,6 +924,7 @@ class FormBlocDeleting<SuccessResponse, FailureResponse>
   List<Object?> get props => [
         _isValidByStep,
         isEditing,
+        _fieldBlocs,
         toJson(),
         currentStep,
         progress,
@@ -960,6 +969,7 @@ class FormBlocDeleteFailed<SuccessResponse, FailureResponse>
         _isValidByStep,
         failureResponse,
         isEditing,
+        _fieldBlocs,
         toJson(),
         currentStep,
       ];
@@ -1003,6 +1013,7 @@ class FormBlocDeleteSuccessful<SuccessResponse, FailureResponse>
         _isValidByStep,
         successResponse,
         isEditing,
+        _fieldBlocs,
         toJson(),
         currentStep,
       ];
@@ -1045,6 +1056,7 @@ class FormBlocUpdatingFields<SuccessResponse, FailureResponse>
   List<Object?> get props => [
         _isValidByStep,
         isEditing,
+        _fieldBlocs,
         toJson(),
         currentStep,
         progress,
