@@ -352,7 +352,10 @@ abstract class FormBloc<SuccessResponse, FailureResponse>
     // TODO: Check when is the last step, but not can submit again, and then go to previous step and try to submit again.
     final notValidStep = state.notValidStep;
 
-    if (state.isLastStep && notValidStep != null && notValidStep != state.lastStep) {
+    if (state.isLastStep &&
+        notValidStep != null &&
+        notValidStep != state.lastStep &&
+        state.currentStep >= notValidStep) {
       // go to the first step invalid
       emit(FormBlocSubmissionFailed(
         isValidByStep: state._isValidByStep,
