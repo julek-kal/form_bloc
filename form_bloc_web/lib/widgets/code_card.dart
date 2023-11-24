@@ -86,7 +86,7 @@ class CodeCard extends StatelessWidget {
                     width: 80,
                     child: GradientElevatedButton(
                       onPressed: () {
-                        Clipboard.setData(ClipboardData(text: code));
+                        Clipboard.setData(ClipboardData(text: code!));
 
                         showCopyFlash(
                           context: context,

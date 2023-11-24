@@ -96,7 +96,7 @@ class CodeScreenState extends State<CodeScreen> {
   }
 
   void _copy() {
-    Clipboard.setData(ClipboardData(text: _code));
+    Clipboard.setData(ClipboardData(text: _code!));
 
     showCopyFlash(
       context: context,
